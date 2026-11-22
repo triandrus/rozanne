@@ -1,6 +1,9 @@
 
 build-static:
     mkdir -p cache
+    if [ ! -e "./cache/rozanne" ] ; then
+        exit 0
+    fi
     podman run --rm -it -e CFLAGS="-static" -e RUSTFLAGS="-C target-feature=+crt-static" -v ..:/src:Z,ro -v ./cache:/root:Z,rw alpine:latest sh -xc "apk add rustup gcc musl-dev && rustup-init --yes --target $(arch)-unknown-linux-musl && cp /src /tmp -r && cd /tmp/src && /root/.cargo/bin/cargo build --release --target=$(arch)-unknown-linux-musl && cp /tmp/src/target/$(arch)-unknown-linux-musl/release/rozanne /root"
 
 container-quick-test:

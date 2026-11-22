@@ -20,6 +20,15 @@ sysext: build
     DESTDIR=rozanne-sysext meson install -C {{build_dir}}
     sysextbuddy --name rozanne {{build_dir}}/rozanne-sysext/ -o {{build_dir}}/rozanne.raw
 
+static-sysext:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    meson setup --wipe {{build_dir}} --prefix {{install_prefix}} -Dcargo_build=disabled
+    DESTDIR=rozanne-sysext meson install -C {{build_dir}}
+    just -f ./test/Justfile build-static
+    install -Dpm0755 -t {{build_dir}}/rozanne-sysext/usr/bin ./test/cache/rozanne
+    sysextbuddy --name rozanne {{build_dir}}/rozanne-sysext/ -o {{build_dir}}/rozanne.raw
+
 host:
     dev -- just sysext
     sudo mkdir -p /run/extensions/
